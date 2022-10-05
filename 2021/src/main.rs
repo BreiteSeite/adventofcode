@@ -14,7 +14,7 @@ fn main() {
     );
 
     day1_puzzle1(sonar_readings.clone());
-    day1_puzzle2(sonar_readings.clone());
+    day1_puzzle2(sonar_readings);
 }
 
 fn day1_puzzle1(sonar_readings: SonarReadings) {
