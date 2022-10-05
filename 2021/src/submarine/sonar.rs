@@ -1,10 +1,10 @@
-type SonarReading = i32;
+type SonarReading = usize;
 
 #[derive(Clone)]
 pub struct SonarReadings(pub Vec<SonarReading>);
 
 impl SonarReadings {
-    pub fn depth_increases(&self) -> i32 {
+    pub fn depth_increases(&self) -> usize {
         self.0.iter().zip(self.0.iter().skip(1)).fold(
             0,
             |sum, (current, next)| {
@@ -17,12 +17,12 @@ impl SonarReadings {
         )
     }
 
-    pub fn depth_increases_windowed(&self, window_size: usize) -> i32 {
+    pub fn depth_increases_windowed(&self, window_size: usize) -> usize {
         self.0
             .windows(window_size)
             .zip(self.0.windows(window_size).skip(1))
             .fold(0, |sum, (current, next)| {
-                if next.iter().sum::<i32>() > current.iter().sum::<i32>() {
+                if next.iter().sum::<usize>() > current.iter().sum::<usize>() {
                     sum + 1
                 } else {
                     sum

@@ -9,7 +9,7 @@ fn main() {
         read_to_string("input/day1_sonar_sweep")
             .unwrap()
             .lines()
-            .map(|r| r.parse::<i32>().unwrap())
+            .map(|r| r.parse::<usize>().unwrap())
             .collect(),
     );
 
