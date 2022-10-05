@@ -1,6 +1,6 @@
 use std::fs::read_to_string;
 
-use submarine::sonar::{self, SonarReadings};
+use submarine::sonar::SonarReadings;
 
 pub mod submarine;
 
