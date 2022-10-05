@@ -1,12 +1,8 @@
 type SonarReading = i32;
 
+#[derive(Clone)]
 pub struct SonarReadings(pub Vec<SonarReading>);
 
-impl Clone for SonarReadings {
-    fn clone(&self) -> Self {
-        Self(self.0.to_owned())
-    }
-}
 impl SonarReadings {
     pub fn depth_increases(&self) -> i32 {
         self.0.iter().zip(self.0.iter().skip(1)).fold(
