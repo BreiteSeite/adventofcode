@@ -3,6 +3,23 @@ use std::fs::read_to_string;
 use crate::submarine::sonar::SonarReadings;
 
 pub fn day1() {
+    println!("Day 1 | Puzzle 1: {}", day1_puzzle1());
+    println!("Day 1 | Puzzle 2: {}", day1_puzzle2());
+}
+
+pub fn day1_puzzle1() -> i32 {
+    let sonar_readings = parse_sonar_sweep_file();
+
+    sonar_readings.depth_increases()
+}
+
+pub fn day1_puzzle2() -> i32 {
+    let sonar_readings = parse_sonar_sweep_file();
+
+    sonar_readings.depth_increases_windowed(3)
+}
+
+fn parse_sonar_sweep_file() -> SonarReadings {
     let sonar_readings = SonarReadings {
         readings: read_to_string("input/day1_sonar_sweep")
             .unwrap()
@@ -10,50 +27,20 @@ pub fn day1() {
             .map(|r| r.parse::<i32>().unwrap())
             .collect(),
     };
-    day1_puzzle1(&sonar_readings);
-    day1_puzzle2(&sonar_readings);
-}
-
-pub fn day1_puzzle1(sonar_readings: &SonarReadings) {
-    println!("Day 1 | Puzzle 1: {}", sonar_readings.depth_increases());
-}
-
-pub fn day1_puzzle2(sonar_readings: &SonarReadings) {
-    println!(
-        "Day 1 | Puzzle 2: {}",
-        sonar_readings.depth_increases_windowed(3)
-    );
+    sonar_readings
 }
 
 #[cfg(test)]
 mod tests {
-    use std::fs::read_to_string;
-
-    use crate::submarine::sonar::SonarReadings;
+    use crate::day1::{day1_puzzle1, day1_puzzle2};
 
     #[test]
     fn day1_puzzle1_solution() {
-        let sonar_readings = SonarReadings {
-            readings: read_to_string("input/day1_sonar_sweep")
-                .unwrap()
-                .lines()
-                .map(|r| r.parse::<i32>().unwrap())
-                .collect(),
-        };
-
-        assert_eq!(sonar_readings.depth_increases(), 1215);
+        assert_eq!(day1_puzzle1(), 1215);
     }
 
     #[test]
     fn day1_puzzle2_solution() {
-        let sonar_readings = SonarReadings {
-            readings: read_to_string("input/day1_sonar_sweep")
-                .unwrap()
-                .lines()
-                .map(|r| r.parse::<i32>().unwrap())
-                .collect(),
-        };
-
-        assert_eq!(sonar_readings.depth_increases_windowed(3), 1150);
+        assert_eq!(day1_puzzle2(), 1150);
     }
 }
