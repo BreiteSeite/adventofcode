@@ -2,9 +2,9 @@ use std::fs::read_to_string;
 
 #[derive(Debug, PartialEq)]
 pub enum ControlInput {
-    Lower(u32),
-    Raise(u32),
-    Forward(u32),
+    Lower(i32),
+    Raise(i32),
+    Forward(i32),
 }
 
 pub fn parse_control_inputs(file: &str) -> Vec<ControlInput> {

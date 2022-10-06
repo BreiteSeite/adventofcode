@@ -1,19 +1,19 @@
 #[derive(Default)]
 pub struct Position {
-    pub horizontal: u32,
-    pub depth: u32,
+    pub horizontal: i32,
+    pub depth: i32,
 }
 
 impl Position {
-    pub fn increase_depth(&mut self, by: u32) {
+    pub fn increase_depth(&mut self, by: i32) {
         self.depth = self.depth + by;
     }
 
-    pub fn decrease_depth(&mut self, by: u32) {
+    pub fn decrease_depth(&mut self, by: i32) {
         self.depth = self.depth - by;
     }
 
-    pub fn forward(&mut self, by: u32) {
+    pub fn forward(&mut self, by: i32) {
         self.horizontal = self.horizontal + by;
     }
 }
