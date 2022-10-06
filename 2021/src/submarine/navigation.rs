@@ -5,11 +5,11 @@ pub struct Position {
 }
 
 impl Position {
-    pub fn increaseDepth(&mut self, by: u32) {
+    pub fn increase_depth(&mut self, by: u32) {
         self.depth = self.depth + by;
     }
 
-    pub fn decreaseDepth(&mut self, by: u32) {
+    pub fn decrease_depth(&mut self, by: u32) {
         self.depth = self.depth - by;
     }
 
@@ -23,15 +23,15 @@ mod tests {
     use super::Position;
 
     #[test]
-    fn calculatePosition() {
+    fn calculate_position() {
         let mut position = Position {
             depth: 0,
             horizontal: 0,
         };
 
-        position.increaseDepth(10);
-        position.increaseDepth(10);
-        position.decreaseDepth(5);
+        position.increase_depth(10);
+        position.increase_depth(10);
+        position.decrease_depth(5);
         position.forward(7);
 
         assert_eq!(position.depth, 15);
