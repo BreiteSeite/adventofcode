@@ -5,13 +5,13 @@ use submarine::sonar::SonarReadings;
 pub mod submarine;
 
 fn main() {
-    let sonar_readings = SonarReadings(
-        read_to_string("input/day1_sonar_sweep")
+    let sonar_readings = SonarReadings {
+        readings: read_to_string("input/day1_sonar_sweep")
             .unwrap()
             .lines()
             .map(|r| r.parse::<i32>().unwrap())
             .collect(),
-    );
+    };
 
     day1_puzzle1(&sonar_readings);
     day1_puzzle2(&sonar_readings);
@@ -36,26 +36,26 @@ mod tests {
 
     #[test]
     fn day1_puzzle1_solution() {
-        let sonar_readings = SonarReadings(
-            read_to_string("input/day1_sonar_sweep")
+        let sonar_readings = SonarReadings {
+            readings: read_to_string("input/day1_sonar_sweep")
                 .unwrap()
                 .lines()
                 .map(|r| r.parse::<i32>().unwrap())
                 .collect(),
-        );
+        };
 
         assert_eq!(sonar_readings.depth_increases(), 1215);
     }
 
     #[test]
     fn day1_puzzle2_solution() {
-        let sonar_readings = SonarReadings(
-            read_to_string("input/day1_sonar_sweep")
+        let sonar_readings = SonarReadings {
+            readings: read_to_string("input/day1_sonar_sweep")
                 .unwrap()
                 .lines()
                 .map(|r| r.parse::<i32>().unwrap())
                 .collect(),
-        );
+        };
 
         assert_eq!(sonar_readings.depth_increases_windowed(3), 1150);
     }
