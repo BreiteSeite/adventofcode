@@ -1,6 +1,5 @@
 type SonarReading = usize;
 
-#[derive(Clone)]
 pub struct SonarReadings(pub Vec<SonarReading>);
 
 impl SonarReadings {
