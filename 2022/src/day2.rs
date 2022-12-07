@@ -3,16 +3,20 @@ use std::{char, fs::read_to_string};
 pub fn day2() {
     let input = read_to_string("input/day2.txt").expect("Can not read input");
 
-    let total_score: u32 = input
+    let solution_part1: u32 = input
         .lines()
         .map(|line| {
             (
-                EncryptedColumn(line.chars().nth(0).expect("can not access first column")),
-                EncryptedColumn(line.chars().nth(2).expect("can not access second column")),
+                EncryptedColumnHandShapes(
+                    line.chars().nth(0).expect("can not access first column"),
+                ),
+                EncryptedColumnHandShapes(
+                    line.chars().nth(2).expect("can not access second column"),
+                ),
             )
         })
         .map(|(col1, col2)| {
-            Game {
+            RPSGame {
                 opponent: col1.get_shape().unwrap(),
                 own: col2.get_shape().unwrap(),
             }
@@ -20,7 +24,31 @@ pub fn day2() {
         })
         .fold(0, |acc, score| acc + score);
 
-    println!("Total score: {total_score}");
+    let solution_part2: u32 = input
+        .lines()
+        .map(|line| {
+            (
+                EncryptedColumnHandShapes(
+                    line.chars().nth(0).expect("can not access first column"),
+                ),
+                EncryptedColumnGameResult(
+                    line.chars().nth(2).expect("can not access second column"),
+                ),
+            )
+        })
+        .map(|(col1, col2)| {
+            RPSGameWithResult {
+                opponent: col1.get_shape().unwrap(),
+                desiredResult: col2
+                    .get_result()
+                    .expect("could not determine desired game result"),
+            }
+            .total_score()
+        })
+        .fold(0, |acc, score| acc + score);
+
+    println!("Day 2 Part 1: {solution_part1}");
+    println!("Day 2 Part 2: {solution_part2}");
 }
 
 #[derive(Debug, PartialEq, Clone, Copy)]
@@ -38,12 +66,46 @@ enum GameResult {
 }
 
 #[derive(Debug, PartialEq, Clone, Copy)]
-struct Game {
-    own: HandShape,
+struct RPSGame {
     opponent: HandShape,
+    own: HandShape,
 }
 
-impl Game {
+struct RPSGameWithResult {
+    opponent: HandShape,
+    desiredResult: GameResult,
+}
+
+impl RPSGameWithResult {
+    pub fn get_hand(opponent: HandShape, desiredResult: GameResult) -> HandShape {
+        if desiredResult == GameResult::Draw {
+            return opponent;
+        }
+
+        if desiredResult == GameResult::Won {
+            return match opponent {
+                HandShape::Rock => HandShape::Paper,
+                HandShape::Scissors => HandShape::Rock,
+                HandShape::Paper => HandShape::Scissors,
+            };
+        } else {
+            return match opponent {
+                HandShape::Rock => HandShape::Scissors,
+                HandShape::Scissors => HandShape::Paper,
+                HandShape::Paper => HandShape::Rock,
+            };
+        }
+    }
+    pub fn total_score(self: Self) -> u32 {
+        return RPSGame {
+            opponent: self.opponent,
+            own: RPSGameWithResult::get_hand(self.opponent, self.desiredResult),
+        }
+        .total_score();
+    }
+}
+
+impl RPSGame {
     pub fn play(self: Self) -> GameResult {
         if self.own == self.opponent {
             return GameResult::Draw;
@@ -74,13 +136,13 @@ impl Game {
     }
 
     pub fn total_score(self: &Self) -> u32 {
-        return Game::score_for_gameresult(self.play()) + Game::score_for_handshape(self.own);
+        return RPSGame::score_for_gameresult(self.play()) + RPSGame::score_for_handshape(self.own);
     }
 }
 
-struct EncryptedColumn(char);
+struct EncryptedColumnHandShapes(char);
 
-impl EncryptedColumn {
+impl EncryptedColumnHandShapes {
     fn get_shape(self: Self) -> Option<HandShape> {
         match self.0 {
             'A' => Some(HandShape::Rock),
@@ -89,6 +151,19 @@ impl EncryptedColumn {
             'X' => Some(HandShape::Rock),
             'Y' => Some(HandShape::Paper),
             'Z' => Some(HandShape::Scissors),
+            _ => None,
+        }
+    }
+}
+
+struct EncryptedColumnGameResult(char);
+
+impl EncryptedColumnGameResult {
+    fn get_result(self: Self) -> Option<GameResult> {
+        match self.0 {
+            'X' => Some(GameResult::Lost),
+            'Y' => Some(GameResult::Draw),
+            'Z' => Some(GameResult::Won),
             _ => None,
         }
     }
@@ -106,9 +181,9 @@ fn get_score(shape: HandShape) -> u8 {
 
 #[cfg(test)]
 mod tests {
-    use crate::day2::{get_score, EncryptedColumn, HandShape};
+    use crate::day2::{get_score, EncryptedColumnHandShapes, HandShape};
 
-    use super::{Game, GameResult};
+    use super::{GameResult, RPSGame};
 
     #[test]
     fn test_get_score() {
@@ -121,7 +196,7 @@ mod tests {
     fn game() {
         assert_eq!(
             GameResult::Draw,
-            Game {
+            RPSGame {
                 own: HandShape::Rock,
                 opponent: HandShape::Rock
             }
@@ -130,7 +205,7 @@ mod tests {
 
         assert_eq!(
             GameResult::Lost,
-            Game {
+            RPSGame {
                 own: HandShape::Paper,
                 opponent: HandShape::Scissors
             }
@@ -139,7 +214,7 @@ mod tests {
 
         assert_eq!(
             GameResult::Lost,
-            Game {
+            RPSGame {
                 own: HandShape::Scissors,
                 opponent: HandShape::Rock
             }
@@ -148,7 +223,7 @@ mod tests {
 
         assert_eq!(
             GameResult::Won,
-            Game {
+            RPSGame {
                 own: HandShape::Rock,
                 opponent: HandShape::Scissors
             }
@@ -160,7 +235,7 @@ mod tests {
     fn test_total_scores() {
         assert_eq!(
             8,
-            Game {
+            RPSGame {
                 own: HandShape::Paper,
                 opponent: HandShape::Rock
             }
@@ -169,7 +244,7 @@ mod tests {
 
         assert_eq!(
             1,
-            Game {
+            RPSGame {
                 own: HandShape::Rock,
                 opponent: HandShape::Paper
             }
@@ -178,7 +253,7 @@ mod tests {
 
         assert_eq!(
             6,
-            Game {
+            RPSGame {
                 own: HandShape::Scissors,
                 opponent: HandShape::Scissors
             }
@@ -188,17 +263,29 @@ mod tests {
 
     #[test]
     fn decrypt_column() {
-        assert_eq!(HandShape::Rock, EncryptedColumn('A').get_shape().unwrap());
-        assert_eq!(HandShape::Rock, EncryptedColumn('X').get_shape().unwrap());
-        assert_eq!(HandShape::Paper, EncryptedColumn('B').get_shape().unwrap());
-        assert_eq!(HandShape::Paper, EncryptedColumn('Y').get_shape().unwrap());
         assert_eq!(
-            HandShape::Scissors,
-            EncryptedColumn('C').get_shape().unwrap()
+            HandShape::Rock,
+            EncryptedColumnHandShapes('A').get_shape().unwrap()
+        );
+        assert_eq!(
+            HandShape::Rock,
+            EncryptedColumnHandShapes('X').get_shape().unwrap()
+        );
+        assert_eq!(
+            HandShape::Paper,
+            EncryptedColumnHandShapes('B').get_shape().unwrap()
+        );
+        assert_eq!(
+            HandShape::Paper,
+            EncryptedColumnHandShapes('Y').get_shape().unwrap()
         );
         assert_eq!(
             HandShape::Scissors,
-            EncryptedColumn('Z').get_shape().unwrap()
+            EncryptedColumnHandShapes('C').get_shape().unwrap()
+        );
+        assert_eq!(
+            HandShape::Scissors,
+            EncryptedColumnHandShapes('Z').get_shape().unwrap()
         );
     }
 }
