@@ -1,5 +1,3 @@
-use aho_corasick::AhoCorasick;
-
 struct CalibrationLine(String);
 
 impl CalibrationLine {
